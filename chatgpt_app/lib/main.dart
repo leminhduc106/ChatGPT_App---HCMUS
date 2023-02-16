@@ -1,6 +1,10 @@
+import 'dart:convert';
+
 import 'package:chatgpt_app/models/chatmessage.dart';
+import 'package:chatgpt_app/service/constant.dart';
 import 'package:chatgpt_app/widgets/chat_message.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
 void main() {
   runApp(const MyApp());
@@ -38,6 +42,28 @@ class _MyHomePageState extends State<MyHomePage> {
     // TODO: implement initState
     super.initState();
     isLoading = false;
+  }
+
+  Future<String> generateResponse(String prompt) async {
+    final apiKey = apiSecretKey;
+    var url = Uri.https("api.openai.com", "v1/completions");
+    final response = await http.post(url,
+        headers: {
+          'Content-Type': 'application.json',
+          'Authorization': 'Bearer $apiKey'
+        },
+        body: jsonEncode({
+          'prompt': prompt,
+          'model': 'text-davinci-003',
+          'max_tokens': 2000,
+          'temperature': 0,
+          'top_p': 1,
+          'frequency_penalty': 0.0,
+          'presence_penalty': 0.0,
+        }));
+    //Decode the response
+    Map<String, dynamic> data = jsonDecode(response.body);
+    return data['choices'][0]['text'];
   }
 
   @override
