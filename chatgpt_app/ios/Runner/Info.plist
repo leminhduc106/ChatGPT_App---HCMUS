@@ -4,8 +4,16 @@
 <dict>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
+	<key>NSAppTransportSecurity</key>
+	<true/>
+	<key>NSAllowsArbitraryLoads</key>
+    <true/>
+	<key>NSSpeechRecognitionUsageDescription</key>
+	<string>This app needs to access the microphone for speech recognition</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Allow access to microphone for recording audio</string>
 	<key>CFBundleDisplayName</key>
 	<string>Chatgpt App</string>
 	<key>CFBundleExecutable</key>

@@ -1,10 +1,14 @@
 import 'dart:convert';
 
 import 'package:chatgpt_app/models/chatmessage.dart';
+import 'package:chatgpt_app/screens/speech_screen.dart';
 import 'package:chatgpt_app/service/constant.dart';
 import 'package:chatgpt_app/widgets/chat_message.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:http/http.dart' as http;
+
+import 'cubit/chat_cubit.dart';
 
 void main() {
   runApp(const MyApp());
@@ -35,21 +39,19 @@ class _MyHomePageState extends State<MyHomePage> {
   late bool isLoading;
   final TextEditingController _textController = TextEditingController();
   final _scrollController = ScrollController();
-  final List<ChatMessage> _messages = [];
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     isLoading = false;
   }
 
   Future<String> generateResponse(String prompt) async {
-    final apiKey = apiSecretKey;
-    var url = Uri.https("api.openai.com", "v1/completions");
+    const apiKey = apiSecretKey;
+    var url = Uri.https("api.openai.com", "/v1/completions");
     final response = await http.post(url,
         headers: {
-          'Content-Type': 'application.json',
+          'Content-Type': 'application/json',
           'Authorization': 'Bearer $apiKey'
         },
         body: jsonEncode({
@@ -63,6 +65,8 @@ class _MyHomePageState extends State<MyHomePage> {
         }));
     //Decode the response
     Map<String, dynamic> data = jsonDecode(response.body);
+    print("Response: ${response.body}");
+    print(apiKey);
     return data['choices'][0]['text'];
   }
 
@@ -70,34 +74,75 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        appBar: AppBar(
-          title: const Text("ChatGPT App"),
-          backgroundColor: const Color(0xff343541),
-        ),
-        backgroundColor: const Color(0xff444654),
-        body: Center(
-          child: Column(children: [
-            Expanded(
-              child: _buildListMessage(),
-            ),
-            Visibility(
-                visible: isLoading,
-                child: const Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: CircularProgressIndicator(
+        drawer: Drawer(
+          child: ListView(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: const BoxDecoration(
+                  color: bgColor,
+                ),
+                child: const Center(
+                    child: Text(
+                  'Menu',
+                  style: TextStyle(
+                    fontSize: 18,
                     color: Colors.white,
+                    fontWeight: FontWeight.w500,
                   ),
                 )),
-            Container(
-              margin: const EdgeInsets.only(bottom: 16),
-              child: Row(
-                children: [
-                  _buildTextField(),
-                  _buildSendButton(),
-                ],
               ),
-            )
-          ]),
+              ListTile(
+                leading: const Icon(Icons.chat),
+                title: const Text('Chat Screen'),
+                onTap: () {
+                  Navigator.popUntil(context, ModalRoute.withName('/'));
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.mic),
+                title: const Text('Voice Screen'),
+                onTap: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const SpeechScreen()));
+                },
+              ),
+            ],
+          ),
+        ),
+        appBar: AppBar(
+          title: const Text("ChatGPT App"),
+          backgroundColor: bgColor,
+        ),
+        backgroundColor: chatBgColor,
+        body: BlocProvider(
+          create: (context) => ChatCubit(),
+          child: Center(
+            child: Column(children: [
+              Expanded(
+                child: _buildListMessage(),
+              ),
+              Visibility(
+                  visible: isLoading,
+                  child: const Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: CircularProgressIndicator(
+                      color: Colors.white,
+                    ),
+                  )),
+              Container(
+                margin: const EdgeInsets.only(bottom: 16),
+                child: Row(
+                  children: [
+                    _buildTextField(),
+                    _buildSendButton(),
+                  ],
+                ),
+              )
+            ]),
+          ),
         ),
       ),
     );
@@ -108,7 +153,7 @@ class _MyHomePageState extends State<MyHomePage> {
       child: Container(
         margin: const EdgeInsets.only(left: 10, right: 10),
         decoration: BoxDecoration(
-          color: const Color(0xff343541),
+          color: const Color(0xff444654),
           borderRadius: BorderRadius.circular(30),
         ),
         child: TextField(
@@ -127,33 +172,71 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Widget _buildSendButton() {
-    return Visibility(
-      visible: !isLoading,
-      child: Container(
-        margin: const EdgeInsets.only(right: 10),
-        decoration: BoxDecoration(
-          color: const Color(0xff343541),
-          borderRadius: BorderRadius.circular(30),
-        ),
-        child: IconButton(
-          icon: const Icon(Icons.send),
-          iconSize: 25,
-          color: Colors.white,
-          onPressed: () {},
-        ),
-      ),
+    return BlocBuilder<ChatCubit, ChatState>(
+      builder: (context, state) {
+        return Visibility(
+          visible: !isLoading,
+          child: Container(
+            margin: const EdgeInsets.only(right: 10),
+            decoration: BoxDecoration(
+              color: bgColor,
+              borderRadius: BorderRadius.circular(30),
+            ),
+            child: IconButton(
+              icon: const Icon(Icons.send),
+              iconSize: 25,
+              color: Colors.white,
+              onPressed: () {
+                //display user input
+                // setState(() {
+                context.read<ChatCubit>().addMessage(ChatMessage(
+                    text: _textController.text,
+                    chatMessageType: ChatMessageType.user));
+                // isLoading = true;
+                // });
+                var input = _textController.text;
+                _textController.clear();
+                Future.delayed(const Duration(milliseconds: 50))
+                    .then((value) => _scrollDown());
+
+                // call chatbot api
+                // generateResponse(input).then((value) {
+                //   setState(() {
+                //     isLoading = false;
+                //     //display chatbot response
+                //     _messages.add(ChatMessage(
+                //         text: value, chatMessageType: ChatMessageType.bot));
+                //   });
+                //   _textController.clear();
+                //   Future.delayed(const Duration(milliseconds: 50))
+                //       .then((value) => _scrollDown());
+                // });
+              },
+            ),
+          ),
+        );
+      },
     );
   }
 
+  void _scrollDown() {
+    _scrollController.animateTo(_scrollController.position.maxScrollExtent,
+        duration: const Duration(milliseconds: 300), curve: Curves.easeOut);
+  }
+
   Widget _buildListMessage() {
-    return ListView.builder(
-      itemCount: _messages.length,
-      controller: _scrollController,
-      itemBuilder: (context, index) {
-        var message = _messages[index];
-        return ChatMessageWidget(
-          text: message.text,
-          chatMessageType: message.chatMessageType,
+    return BlocBuilder<ChatCubit, ChatState>(
+      builder: (context, state) {
+        return ListView.builder(
+          itemCount: state.messages.length,
+          controller: _scrollController,
+          itemBuilder: (context, index) {
+            var message = state.messages[index];
+            return ChatMessageWidget(
+              text: message.text,
+              chatMessageType: message.chatMessageType,
+            );
+          },
         );
       },
     );

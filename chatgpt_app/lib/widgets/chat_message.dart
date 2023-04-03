@@ -13,8 +13,8 @@ class ChatMessageWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.symmetric(vertical: 10),
-      padding: const EdgeInsets.all(10),
+      margin: const EdgeInsets.symmetric(vertical: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
       color: chatMessageType == ChatMessageType.bot
           ? const Color(0xff343541)
           : const Color(0xff444654),
