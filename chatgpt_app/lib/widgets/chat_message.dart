@@ -24,10 +24,8 @@ class ChatMessageWidget extends StatelessWidget {
               margin: const EdgeInsets.only(right: 16),
               child: chatMessageType == ChatMessageType.bot
                   ? CircleAvatar(
-                      backgroundColor: const Color.fromRGBO(16, 163, 127, 1),
                       child: Image.asset(
                         "assets/images/chatbot.png",
-                        color: Colors.white,
                         scale: 1.5,
                       ),
                     )
