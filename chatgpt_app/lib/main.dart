@@ -1,4 +1,3 @@
-import 'package:chatgpt_app/screens/home_screen.dart';
 import 'package:chatgpt_app/screens/speech_screen.dart';
 import 'package:flutter/material.dart';
 

@@ -22,12 +22,21 @@ class _SpeechScreenState extends State<SpeechScreen> {
   SpeechToText speechToText = SpeechToText();
   final _scrollController = ScrollController();
   late bool isLoading;
+  late FocusNode _focusNode;
   final TextEditingController _textController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
     isLoading = false;
+    _focusNode = FocusNode();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _textController.dispose();
+    _focusNode.dispose();
   }
 
   @override
@@ -79,13 +88,17 @@ class _SpeechScreenState extends State<SpeechScreen> {
                   ),
                 ),
                 Visibility(
-                    visible: isLoading,
-                    child: const Padding(
-                      padding: EdgeInsets.all(8.0),
-                      child: CircularProgressIndicator(
-                        color: Colors.white,
-                      ),
-                    )),
+                  visible: isLoading,
+                  child: Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 190, vertical: 16),
+                    color: chatBgColor,
+                    child: const CircularProgressIndicator(
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
                 Container(
                   margin: const EdgeInsets.only(top: 16),
                   child: Row(
@@ -168,6 +181,7 @@ class _SpeechScreenState extends State<SpeechScreen> {
           borderRadius: BorderRadius.circular(30),
         ),
         child: TextField(
+          focusNode: _focusNode,
           textCapitalization: TextCapitalization.sentences,
           controller: _textController,
           style: const TextStyle(color: Colors.black54),
@@ -214,6 +228,7 @@ class _SpeechScreenState extends State<SpeechScreen> {
                 });
                 var input = _textController.text;
                 _textController.clear();
+                _focusNode.unfocus();
                 Future.delayed(const Duration(milliseconds: 50))
                     .then((value) => _scrollDown());
 
