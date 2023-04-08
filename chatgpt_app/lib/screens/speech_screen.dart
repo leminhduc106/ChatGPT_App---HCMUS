@@ -219,7 +219,8 @@ class _SpeechScreenState extends State<SpeechScreen> {
                       Future.delayed(const Duration(milliseconds: 50))
                           .then((value) => _scrollDown());
                       settingState.isAutoRead
-                          ? TextToSpeech.speak(value)
+                          ? TextToSpeech.speak(
+                              value, settingState.currentLanguage!)
                           : null;
                     });
                   },
