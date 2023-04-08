@@ -1,7 +1,10 @@
 import 'package:chatgpt_app/screens/speech_screen.dart';
+import 'package:chatgpt_app/service/tts.dart';
 import 'package:flutter/material.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  TextToSpeech.initTTS();
   runApp(const MyApp());
 }
 

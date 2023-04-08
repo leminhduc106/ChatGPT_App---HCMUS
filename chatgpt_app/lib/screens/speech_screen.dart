@@ -141,7 +141,7 @@ class _SpeechScreenState extends State<SpeechScreen> {
                           setState(() {
                             isListening = false;
                           });
-                          speechToText.stop();
+                          await speechToText.stop();
                         },
                         child: CircleAvatar(
                           backgroundColor: bgColor,
@@ -187,7 +187,7 @@ class _SpeechScreenState extends State<SpeechScreen> {
           style: const TextStyle(color: Colors.black54),
           decoration: const InputDecoration(
             hintText: "Start typing or talking...",
-            hintStyle: TextStyle(color: Colors.black38),
+            hintStyle: TextStyle(color: Colors.black38, fontSize: 14),
             border: InputBorder.none,
             contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 5),
           ),
