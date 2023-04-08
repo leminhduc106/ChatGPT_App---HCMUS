@@ -1,6 +1,9 @@
+import 'package:chatgpt_app/cubit/chat/chat_cubit.dart';
+import 'package:chatgpt_app/cubit/setting/setting_cubit.dart';
 import 'package:chatgpt_app/screens/speech_screen.dart';
 import 'package:chatgpt_app/service/tts.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -13,10 +16,20 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return MaterialApp(
       title: 'Flutter Demo',
       debugShowCheckedModeBanner: false,
-      home: SpeechScreen(),
+      home: MultiBlocProvider(
+        providers: [
+          BlocProvider(
+            create: (context) => ChatCubit(),
+          ),
+          BlocProvider(
+            create: (context) => SettingCubit(),
+          ),
+        ],
+        child: const SpeechScreen(),
+      ),
     );
   }
 }
