@@ -53,22 +53,36 @@ class _SpeechScreenState extends State<SpeechScreen> {
                   decoration: const BoxDecoration(
                     color: bgColor,
                   ),
-                  child: const Center(
-                      child: Text(
-                    'Menu',
-                    style: TextStyle(
-                      fontSize: 18,
-                      color: Colors.white,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  )),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: const [
+                      Text(
+                        'Settings',
+                        style: TextStyle(
+                          fontSize: 18,
+                          color: Colors.white,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      Icon(
+                        Icons.settings,
+                        color: Colors.white,
+                      ),
+                    ],
+                  ),
                 ),
                 ListTile(
-                  leading: const Icon(Icons.chat),
-                  title: const Text('Chat'),
-                  onTap: () {
-                    Navigator.popUntil(context, ModalRoute.withName('/'));
-                  },
+                  leading: const Icon(Icons.book_online_outlined),
+                  title: const Text('Auto read'),
+                  trailing: Switch(
+                    value: false,
+                    onChanged: (value) {},
+                  ),
+                ),
+                ListTile(
+                  leading: const Icon(Icons.delete_outline),
+                  title: const Text('Clear conversations'),
+                  onTap: () {},
                 ),
               ],
             ),
