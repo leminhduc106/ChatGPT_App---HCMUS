@@ -1,11 +1,11 @@
 import 'package:avatar_glow/avatar_glow.dart';
+import 'package:chatgpt_app/cubit/chat/chat_cubit.dart';
 import 'package:chatgpt_app/service/api_service.dart';
 import 'package:chatgpt_app/service/constant.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:speech_to_text/speech_to_text.dart';
 
-import '../cubit/chat_cubit.dart';
 import '../models/chatmessage.dart';
 import '../widgets/chat_message.dart';
 
