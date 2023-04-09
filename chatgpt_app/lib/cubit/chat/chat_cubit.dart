@@ -11,4 +11,8 @@ class ChatCubit extends Cubit<ChatState> {
   void addMessage(ChatMessage message) {
     emit(ChatState(messages: [...state.messages, message]));
   }
+
+  void removeAllMessages() {
+    emit(ChatState(messages: []));
+  }
 }

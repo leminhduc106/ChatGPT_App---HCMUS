@@ -55,7 +55,7 @@ class ChatMessageWidget extends StatelessWidget {
                         ? Container()
                         : GestureDetector(
                             onTap: () {
-                              TextToSpeech.speak(text, state.currentLanguage!);
+                              TextToSpeech.speak(text, state.currentLanguage);
                             },
                             child: Container(
                               margin: const EdgeInsets.only(left: 16),

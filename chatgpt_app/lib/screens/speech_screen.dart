@@ -48,98 +48,99 @@ class _SpeechScreenState extends State<SpeechScreen> {
       child: Scaffold(
         drawer: const CustomDrawer(),
         appBar: AppBar(
-          title: const Text('Speech Screen'),
+          title: const Text('GPT-3 Chatbot'),
           backgroundColor: bgColor,
         ),
-        body: BlocProvider(
-          create: (context) => ChatCubit(),
-          child: Column(
-            children: [
-              Expanded(
-                child: Container(
-                  color: chatBgColor,
-                  child: _buildListMessage(),
-                ),
-              ),
-              Visibility(
-                visible: isLoading,
-                child: Container(
-                  width: double.infinity,
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 190, vertical: 16),
-                  color: chatBgColor,
-                  child: const CircularProgressIndicator(
-                    color: Colors.white,
+        body: BlocBuilder<ChatCubit, ChatState>(
+          builder: (context, state) {
+            return Column(
+              children: [
+                Expanded(
+                  child: Container(
+                    color: chatBgColor,
+                    child: _buildListMessage(),
                   ),
                 ),
-              ),
-              Container(
-                margin: const EdgeInsets.only(top: 16),
-                child: Row(
-                  children: [
-                    _buildTextField(),
-                    _buildSendButton(),
-                  ],
+                Visibility(
+                  visible: isLoading,
+                  child: Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 190, vertical: 16),
+                    color: chatBgColor,
+                    child: const CircularProgressIndicator(
+                      color: Colors.white,
+                    ),
+                  ),
                 ),
-              ),
-              AvatarGlow(
-                endRadius: 35,
-                animate: isListening,
-                duration: const Duration(milliseconds: 2000),
-                glowColor: bgColor,
-                repeat: true,
-                repeatPauseDuration: const Duration(milliseconds: 100),
-                showTwoGlows: true,
-                child: BlocBuilder<ChatCubit, ChatState>(
-                  builder: (context, state) {
-                    return GestureDetector(
-                      onTapDown: (details) async {
-                        if (!isListening) {
-                          var available = await speechToText.initialize();
-                          if (available) {
-                            setState(() {
-                              isListening = true;
-                            });
-                            speechToText.listen(
-                              onResult: (result) {
-                                setState(() {
-                                  text = result.recognizedWords;
-                                  _textController.text = text;
-                                });
-                              },
-                            );
+                Container(
+                  margin: const EdgeInsets.only(top: 16),
+                  child: Row(
+                    children: [
+                      _buildTextField(),
+                      _buildSendButton(),
+                    ],
+                  ),
+                ),
+                AvatarGlow(
+                  endRadius: 35,
+                  animate: isListening,
+                  duration: const Duration(milliseconds: 2000),
+                  glowColor: bgColor,
+                  repeat: true,
+                  repeatPauseDuration: const Duration(milliseconds: 100),
+                  showTwoGlows: true,
+                  child: BlocBuilder<ChatCubit, ChatState>(
+                    builder: (context, state) {
+                      return GestureDetector(
+                        onTapDown: (details) async {
+                          if (!isListening) {
+                            var available = await speechToText.initialize();
+                            if (available) {
+                              setState(() {
+                                isListening = true;
+                              });
+                              speechToText.listen(
+                                onResult: (result) {
+                                  setState(() {
+                                    text = result.recognizedWords;
+                                    _textController.text = text;
+                                  });
+                                },
+                              );
+                            }
                           }
-                        }
-                      },
-                      onTapUp: (details) async {
-                        setState(() {
-                          isListening = false;
-                        });
-                        await speechToText.stop();
-                      },
-                      child: CircleAvatar(
-                        backgroundColor: bgColor,
-                        radius: 25,
-                        child: Icon(
-                          isListening ? Icons.mic : Icons.mic_none,
-                          color: Colors.white,
+                        },
+                        onTapUp: (details) async {
+                          setState(() {
+                            isListening = false;
+                          });
+                          await speechToText.stop();
+                        },
+                        child: CircleAvatar(
+                          backgroundColor: bgColor,
+                          radius: 25,
+                          child: Icon(
+                            isListening ? Icons.mic : Icons.mic_none,
+                            color: Colors.white,
+                          ),
                         ),
-                      ),
-                    );
-                  },
+                      );
+                    },
+                  ),
                 ),
-              ),
-              Text(
-                "Hold to speak",
-                style: TextStyle(
-                  fontSize: 12,
-                  color: isListening ? Colors.black54 : Colors.black45,
-                  fontWeight: FontWeight.w500,
+                Text(
+                  "Hold to speak",
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: isListening ? Colors.black54 : Colors.black45,
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
-              ),
-              const SizedBox(height: 10),
-            ],
-          ),
+                const SizedBox(height: 10),
+              ],
+            );
+          },
         ),
       ),
     );
@@ -220,7 +221,7 @@ class _SpeechScreenState extends State<SpeechScreen> {
                           .then((value) => _scrollDown());
                       settingState.isAutoRead
                           ? TextToSpeech.speak(
-                              value, settingState.currentLanguage!)
+                              value, settingState.currentLanguage)
                           : null;
                     });
                   },
