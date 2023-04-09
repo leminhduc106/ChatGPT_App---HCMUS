@@ -217,12 +217,12 @@ class _SpeechScreenState extends State<SpeechScreen> {
                             text: value, chatMessageType: ChatMessageType.bot));
                       });
                       _textController.clear();
-                      Future.delayed(const Duration(milliseconds: 50))
-                          .then((value) => _scrollDown());
                       settingState.isAutoRead
                           ? TextToSpeech.speak(
                               value, settingState.currentLanguage)
                           : null;
+                      Future.delayed(const Duration(milliseconds: 50))
+                          .then((value) => _scrollDown());
                     });
                   },
                 ),
