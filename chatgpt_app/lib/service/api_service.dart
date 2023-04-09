@@ -22,7 +22,7 @@ class ApiService {
           'presence_penalty': 0.0,
         }));
     //Decode the response
-    Map<String, dynamic> data = jsonDecode(response.body);
+    Map<String, dynamic> data = jsonDecode(utf8.decode(response.bodyBytes));
     return data['choices'][0]['text'];
   }
 }
